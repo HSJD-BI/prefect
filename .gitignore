@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# Envs & secrets
+.env
+.env.*
+*.env
+
+# Prefect local data
+.prefect/
+# Logs
+prefect-server/logs/
+*.log
+
+# OS/IDE
+.DS_Store
+.vscode/
+.idea/
+
