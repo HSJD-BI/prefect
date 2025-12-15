@@ -7,9 +7,9 @@ if __name__ == "__main__":
         source="https://github.com/TomasGo002/test-deployment.git",
         entrypoint="workflow_test.py:github_stars"
     ).deploy(
-        name="sample-deployment",
-        work_pool_name="vm-BI2",
+        name="sample-deployment-local",
+        work_pool_name="local-pool",
         parameters={"repos": ["PrefectHQ/prefect"]}
     )
-    print("Deployment created: sample-deployment -> vm-BI2")
+    print("Deployment created: sample-deployment -> local-pool")
 

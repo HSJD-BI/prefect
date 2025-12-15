@@ -1,0 +1,48 @@
+
+name: whatsapp_scrapping
+prefect-version: 3.6.5
+
+build:
+  - prefect_docker.deployments.steps.build_docker_image:
+      id: build-image
+      requires: prefect-docker>=0.3.0
+      image_name: docker.io/tomasgo002/whatsapp_scrapping
+      tag: latest
+      dockerfile: dockerfile
+
+
+push:
+  - prefect_docker.deployments.steps.push_docker_image:
+      id: push-image
+      requires: prefect-docker
+      image_name: "{{ build-image.image_name }}"
+      tag: "{{ build-image.tag }}"
+
+
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/whatsapp_scrapping.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.reminders-profile }}"  
+  - prefect.deployments.steps.pip_install_requirements:
+      directory: "{{ clone-step.directory }}"
+      requirements_file: requirements.txt
+      # OR requirements_file: "{{ clone-step.directory }}/requirements.txt"
+
+deployments:
+  - name: deploy-reporte-diario-recordatorios
+    description: "Generar reporte diario de recordatorios por WhatsApp."
+    schedule: {}
+    flow_name: reportes-diarios-flow
+    entrypoint: flows/report_flow.py:reportes_diarios_flow
+    work_pool:
+      name: "vm-BI2"
+      job_variables:
+        image: "{{ build-image.image }}"
+        env:
+          DATA_PATH: "profiles/whatsapp_profile"
+          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
+          PROFILE_ID: "1"
+          MAIL_RECIPIENTS: '["bihsjd5@sanjuandedios.org.ar"]'
