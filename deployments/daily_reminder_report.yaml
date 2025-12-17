@@ -1,6 +1,6 @@
-
 name: whatsapp_scrapping
 prefect-version: 3.6.5
+
 
 build:
   - prefect_docker.deployments.steps.build_docker_image:
@@ -19,7 +19,6 @@ push:
       tag: "{{ build-image.tag }}"
 
 
-
 pull:
   - prefect.deployments.steps.git_clone:
       id: clone-step
@@ -29,20 +28,40 @@ pull:
   - prefect.deployments.steps.pip_install_requirements:
       directory: "{{ clone-step.directory }}"
       requirements_file: requirements.txt
-      # OR requirements_file: "{{ clone-step.directory }}/requirements.txt"
+
 
 deployments:
   - name: deploy-reporte-diario-recordatorios
     description: "Generar reporte diario de recordatorios por WhatsApp."
-    schedule: {}
+    schedules:
+      - cron: "0 8 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
     flow_name: reportes-diarios-flow
     entrypoint: flows/report_flow.py:reportes_diarios_flow
     work_pool:
-      name: "vm-BI2"
+      name: "local-pool"
       job_variables:
         image: "{{ build-image.image }}"
+        network_mode: "host"
         env:
-          DATA_PATH: "profiles/whatsapp_profile"
+          PREFECT_API_URL: "http://127.0.0.1:4200/api"
           DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
-          PROFILE_ID: "1"
           MAIL_RECIPIENTS: '["bihsjd5@sanjuandedios.org.ar"]'
+  
+  - name: deploy-asignar-perfiles-recordatorios
+    description: "Asignar un perfil de recordatorio a cada paciente al que se le debe mandar un recordatorio en el día."
+    schedules:
+      - cron: "0 8 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+    flow_name: asignar-perfiles-flow
+    entrypoint: flows/assign_flow.py:asignar_perfiles_flow
+    work_pool:
+      name: "local-pool"
+      job_variables: 
+        image: "{{ build-image.image }}"
+        network_mode: "host"
+        env:
+          PREFECT_API_URL: "http://127.0.0.1:4200/api"
+          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
