@@ -1,0 +1,92 @@
+name: whatsapp_scrapping_msg
+prefect-version: 3.6.5
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/whatsapp_scrapping.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.reminders-profile }}"  
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+  # - prefect.deployments.steps.pip_install_requirements:
+  #     directory: "{{ clone-step.directory }}"
+  #     requirements_file: requirements.txt
+
+deployments:
+  - name: deploy-open-browser-1
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: open-persistent-browser
+    entrypoint: flows/open_browser_flow.py:open_browser_flow
+    work_pool:
+      name: "vm-BI2"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+  
+  - name: deploy-open-browser-2
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: open-persistent-browser
+    entrypoint: flows/open_browser_flow.py:open_browser_flow
+    work_pool:
+      name: "vm-BI1"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+  
+  - name: deploy-open-browser-3
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: open-persistent-browser
+    entrypoint: flows/open_browser_flow.py:open_browser_flow
+    work_pool:
+      name: "vm-BI6"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+
+  - name: deploy-send-messages-1
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: enviar-mensaje-recordatorios
+    entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    work_pool:
+      name: "vm-BI2"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
+          PROFILE_ID: "1"
+
+
+  - name: deploy-send-messages-2
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: enviar-mensaje-recordatorios
+    entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    work_pool:
+      name: "vm-BI1"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
+          PROFILE_ID: "2"
+
+
+  - name: deploy-send-messages-3
+    description: "Abrir navegador para iniciar sesión en Whatsapp."
+    flow_name: enviar-mensaje-recordatorios
+    entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    work_pool:
+      name: "vm-BI6"
+      job_variables:
+        env:
+          PREFECT_API_URL: "http://10.0.1.120:4200/api"
+          DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
+          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
+          PROFILE_ID: "3"

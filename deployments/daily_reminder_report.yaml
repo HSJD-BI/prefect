@@ -65,3 +65,4 @@ deployments:
         env:
           PREFECT_API_URL: "http://127.0.0.1:4200/api"
           DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
+  
