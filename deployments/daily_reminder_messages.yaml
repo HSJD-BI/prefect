@@ -56,15 +56,8 @@ deployments:
         env:
           PREFECT_API_URL: "http://10.0.1.120:4200/api"
           DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
-          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
           PROFILE_ID: "1"
-          SERVICIOS: '{{ prefect.variables.servicios }}'
-          START_HOUR: "{{ prefect.variables.start_hour }}"
-          CUTOFF_HOUR: '{{ prefect.variables.cutoff_hour }}'
-          MIN_MESSAGE_DELAY: '{{ prefect.variables.min_message_delay }}'
-          MAX_MESSAGE_DELAY: '{{ prefect.variables.max_message_delay }}'
-          MIN_ACTION_DELAY: '{{ prefect.variables.min_action_delay }}'
-          MAX_ACTION_DELAY: '{{ prefect.variables.max_action_delay }}'
+          TESTING: "false"
 
 
   - name: deploy-send-messages-2
@@ -77,15 +70,8 @@ deployments:
         env:
           PREFECT_API_URL: "http://10.0.1.120:4200/api"
           DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
-          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
           PROFILE_ID: "2"
-          SERVICIOS: '{{ prefect.variables.servicios }}'
-          START_HOUR: '{{ prefect.variables.start_hour }}'
-          CUTOFF_HOUR: '{{ prefect.variables.cutoff_hour }}'
-          MIN_MESSAGE_DELAY: '{{ prefect.variables.min_message_delay }}'
-          MAX_MESSAGE_DELAY: '{{ prefect.variables.max_message_delay }}'
-          MIN_ACTION_DELAY: '{{ prefect.variables.min_action_delay }}'
-          MAX_ACTION_DELAY: '{{ prefect.variables.max_action_delay }}'
+          TESTING: "false"
 
 
   - name: deploy-send-messages-3
@@ -98,12 +84,5 @@ deployments:
         env:
           PREFECT_API_URL: "http://10.0.1.120:4200/api"
           DATA_PATH: "/home/ububi/Documentos/Bi/whatsapp_scrapping/profiles/whatsapp_profile"
-          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
           PROFILE_ID: "3"
-          SERVICIOS: '{{ prefect.variables.servicios }}'
-          START_HOUR: '{{ prefect.variables.start_hour }}'
-          CUTOFF_HOUR: '{{ prefect.variables.cutoff_hour }}'
-          MIN_MESSAGE_DELAY: '{{ prefect.variables.min_message_delay }}'
-          MAX_MESSAGE_DELAY: '{{ prefect.variables.max_message_delay }}'
-          MIN_ACTION_DELAY: '{{ prefect.variables.min_action_delay }}'
-          MAX_ACTION_DELAY: '{{ prefect.variables.max_action_delay }}'
+          TESTING: "false"

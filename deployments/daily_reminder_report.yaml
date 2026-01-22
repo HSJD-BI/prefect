@@ -46,16 +46,9 @@ deployments:
         network_mode: "host"
         env:
           PREFECT_API_URL: "http://127.0.0.1:4200/api"
-          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
-          MAIL_RECIPIENTS: '["matias.pereira@sanjuandedios.org.ar", "constanza.churio@sanjuandedios.org.ar", "gestiondeproyectos@sanjuandedios.org.ar"]'
-          MAIL_COPY_RECIPIENTS: '["gonzalo.beloqui@sanjuandedios.org.ar"]'
-          SERVICIOS: '{{ prefect.variables.servicios }}'
-          START_HOUR: '{{ prefect.variables.start_hour }}'
-          CUTOFF_HOUR: '{{ prefect.variables.cutoff_hour }}'
-          MIN_MESSAGE_DELAY: '{{ prefect.variables.min_message_delay }}'
-          MAX_MESSAGE_DELAY: '{{ prefect.variables.max_message_delay }}'
-          MIN_ACTION_DELAY: '{{ prefect.variables.min_action_delay }}'
-          MAX_ACTION_DELAY: '{{ prefect.variables.max_action_delay }}'
+          MAIL_RECIPIENTS: "[\"matias.pereira@sanjuandedios.org.ar\", \"constanza.churio@sanjuandedios.org.ar\", \"gestiondeproyectos@sanjuandedios.org.ar\"]"
+          MAIL_COPY_RECIPIENTS: "[\"gonzalo.beloqui@sanjuandedios.org.ar\", \"bihsjd5@sanjuandedios.org.ar\"]"
+          TESTING: "false"
 
   
   - name: deploy-asignar-perfiles-recordatorios
@@ -63,7 +56,7 @@ deployments:
     schedules:
       - cron: "0 8 * * *"
         timezone: "America/Buenos_Aires"
-        active: false
+        active: true
     flow_name: asignar-perfiles-flow
     entrypoint: flows/assign_flow.py:asignar_perfiles_flow
     work_pool:
@@ -73,5 +66,4 @@ deployments:
         network_mode: "host"
         env:
           PREFECT_API_URL: "http://127.0.0.1:4200/api"
-          DB_CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=10.0.0.235;Database=DW;UID=Scheduler_02;PWD=Hospi21*talDw02;Encrypt=yes;TrustServerCertificate=yes"
-          SERVICIOS: '{{ prefect.variables.servicios }}'
+          TESTING: "false"
