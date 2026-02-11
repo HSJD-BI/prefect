@@ -6,7 +6,7 @@ pull:
       id: clone-step
       repository: https://github.com/HSJD-BI/update-precios-farmacia.git
       branch: "{{ prefect.variables.deployment_branch }}"
-      credentials: "{{ prefect.blocks.github-credentials.reminders-profile }}"  
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
   - prefect.deployments.steps.run_shell_script:
       script: uv pip install -r requirements.txt
       stream_output: true
@@ -23,4 +23,21 @@ deployments:
         env:
           USUARIO_TS: "DEMO"
           PASSWORD_TS: "TEST"
-          
+    schedules:
+      - cron: "0 0 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
+  - name: deploy-scrapping-farmacia
+    descripcion: ""
+    flow_name: scrapping-carga-precios
+    entrypoint: flows/flow_scrapping.py:scrapping_carga_precios
+    work_pool:
+      name: "vm-farmacia"
+      job_variables:
+        env:
+          USUARIO_TS: "DEMO"
+          PASSWORD_TS: "TEST"
+    schedules:
+      - cron: "15 0 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
