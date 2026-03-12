@@ -41,3 +41,23 @@ deployments:
       - cron: "15 0 * * *"
         timezone: "America/Buenos_Aires"
         active: true
+  - name: deploy-notify-email
+    descripcion: ""
+    flow_name: notify_email
+    entrypoint: flows/flow_notify_email.py:notify_email
+    work_pool:
+      name: "vm-farmacia"
+      job_variables:
+        env:
+          USUARIO_TS: "DEMO"
+          PASSWORD_TS: "TEST"
+  - name: deploy-reminder-items-pend
+    descripcion: "envio mail items pendientes de revisar app farmacia"
+    flow_name: reminder_items_pend
+    entrypoint: flows/flow_reminder_items_pend.py:reminder_items_pend
+    work_pool:
+      name: "vm-farmacia"
+      job_variables:
+        env:
+          USUARIO_TS: "DEMO"
+          PASSWORD_TS: "TEST"
