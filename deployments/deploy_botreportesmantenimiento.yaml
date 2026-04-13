@@ -1,0 +1,31 @@
+name: botReportesMantenimiento
+prefect-version: 3.6.11
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/botReportesMantenimiento.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+deployments:
+  - name: deploy-botReportesMantenimiento
+    descripcion: ""
+    flow_name: bot_reportes_mantenimiento_flow
+    entrypoint: flows/flow.py:bot_reportes_mantenimiento_flow
+    work_pool:
+      name: "vm_reportes"
+      job_variables:
+        env:
+          CLIENT_ID: 5556026d-0ae8-4d60-a343-b5141d63778b
+          TENANT_ID: 4212c5a7-7deb-4ed3-8684-0ab5a34d13f3
+          SITE_URL: https://hospitalsanjuandedios.sharepoint.com/sites/Procesos-Analitycs
+    schedules:
+      - cron: "0 0 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+  
