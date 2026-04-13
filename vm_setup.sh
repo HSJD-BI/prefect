@@ -163,7 +163,7 @@ uv venv .venv
 source .venv/bin/activate
 
 if [[ "$INSTALL_PLAYWRIGHT" == "yes" ]]; then
-  uv pip install prefect uv playwright
+  uv pip install prefect==3.6.17 uv playwright
 
   echo "==> Installing Playwright browsers and system deps (may prompt for sudo)…"
   playwright install --with-deps
