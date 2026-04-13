@@ -1,12 +1,78 @@
-
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
 
+ask_yes_no() {
+  local var_name="$1"
+  local prompt="$2"
+  local default_value="$3"
+  local current_value="${!var_name:-}"
+  local answer
+  local suffix
+
+  if [[ -n "$current_value" ]]; then
+    case "${current_value,,}" in
+      y|yes|true|1)
+        printf -v "$var_name" "yes"
+        return
+        ;;
+      n|no|false|0)
+        printf -v "$var_name" "no"
+        return
+        ;;
+      *)
+        echo "Invalid value for ${var_name}: ${current_value}. Use yes/no, true/false, or 1/0."
+        exit 1
+        ;;
+    esac
+  fi
+
+  case "${default_value,,}" in
+    y|yes)
+      suffix="[Y/n]"
+      default_value="yes"
+      ;;
+    n|no)
+      suffix="[y/N]"
+      default_value="no"
+      ;;
+    *)
+      echo "Invalid default for ${var_name}: ${default_value}."
+      exit 1
+      ;;
+  esac
+
+  if [[ -t 0 ]]; then
+    while true; do
+      read -r -p "${prompt} ${suffix}: " answer
+      answer="${answer:-$default_value}"
+      case "${answer,,}" in
+        y|yes)
+          printf -v "$var_name" "yes"
+          return
+          ;;
+        n|no)
+          printf -v "$var_name" "no"
+          return
+          ;;
+        *)
+          echo "Please answer yes or no."
+          ;;
+      esac
+    done
+  fi
+
+  printf -v "$var_name" "%s" "$default_value"
+}
+
 # --- Ask for Prefect pool name ---
 DEFAULT_POOL="vm-BIX"
 
-read -r -p "Enter Prefect pool name [${DEFAULT_POOL}]: " PREFECT_POOL
+if [[ -t 0 ]]; then
+  read -r -p "Enter Prefect pool name [${DEFAULT_POOL}]: " PREFECT_POOL
+else
+  PREFECT_POOL="${PREFECT_POOL:-$DEFAULT_POOL}"
+fi
 PREFECT_POOL="${PREFECT_POOL:-$DEFAULT_POOL}"
 
 # Basic validation (systemd + Prefect pool names: keep it simple)
@@ -14,47 +80,67 @@ if [[ -z "$PREFECT_POOL" ]]; then
   echo "❌ Pool name cannot be empty."
   exit 1
 fi
-``
+
+ask_yes_no INSTALL_PLAYWRIGHT "Install Playwright Python package, browsers, and system dependencies?" "yes"
+ask_yes_no INSTALL_ODBC "Install Microsoft ODBC 18 drivers and tools?" "yes"
 
 ##############################
 # Configurable parameters
 ##############################
-TARGET_USER="${TARGET_USER:-ububi}"
-HOME_DIR="${HOME_DIR:-/home/$TARGET_USER}"
+TARGET_USER="${TARGET_USER:-$(id -un)}"
+HOME_DIR="${HOME_DIR:-$(getent passwd "$TARGET_USER" | cut -d: -f6)}"
 PREFECT_DIR="${PREFECT_DIR:-$HOME_DIR/prefect}"
 PREFECT_API_URL="${PREFECT_API_URL:-http://10.0.1.120:4200/api}"
-
-# Microsoft ODBC package versions to fetch (adjust if needed)
-MSODBC_VERSION="${MSODBC_VERSION:-18.3.1.1-1}"
-MSSQLTOOLS_VERSION="${MSSQLTOOLS_VERSION:-18.4.1.1-1}"
-
-# Microsoft repo codename path (the original commands used 'focal' explicitly)
-MS_REPO_CODENAME="${MS_REPO_CODENAME:-focal}"
 
 ##############################
 # Safety checks
 ##############################
+if [[ -r /etc/os-release ]]; then
+  # shellcheck disable=SC1091
+  source /etc/os-release
+else
+  echo "This script expects Ubuntu and could not read /etc/os-release."
+  exit 1
+fi
+
+if [[ "${ID:-}" != "ubuntu" ]]; then
+  echo "This script is intended for Ubuntu. Detected: ${PRETTY_NAME:-unknown OS}."
+  exit 1
+fi
+
 CURRENT_USER="$(id -un)"
+if [[ "$EUID" -eq 0 && "${TARGET_USER}" == "root" ]]; then
+  echo "Do not run this script with sudo/root directly."
+  echo "Run it as the Ubuntu VM user instead, for example: bash $0"
+  exit 1
+fi
+
 if [[ "$CURRENT_USER" != "$TARGET_USER" ]]; then
   echo "Please run this script as the target user '$TARGET_USER'."
   echo "Tip: log in as $TARGET_USER or run: sudo -u $TARGET_USER -H bash $0"
   exit 1
 fi
 
-if [[ ! -d "$HOME_DIR" ]]; then
-  echo "Home directory $HOME_DIR does not exist."
+if [[ -z "$HOME_DIR" || ! -d "$HOME_DIR" ]]; then
+  echo "Home directory for $TARGET_USER does not exist."
+  exit 1
+fi
+
+if ! command -v sudo >/dev/null 2>&1; then
+  echo "sudo is required. Install sudo or run from an Ubuntu user with sudo access."
+  exit 1
+fi
+
+if ! command -v systemctl >/dev/null 2>&1; then
+  echo "systemd is required for the Prefect worker service, but systemctl was not found."
   exit 1
 fi
 
 trap 'echo "❌ Script failed at line $LINENO. Check the log above for details."' ERR
 
 echo "==> Installing base packages…"
-sudo apt-get update -y
-# Try Python 3.13 headers first; fallback to generic python3-dev if not available
-if ! sudo apt-get install -y build-essential curl python3.13-dev; then
-  echo "python3.13-dev not available, falling back to python3-dev…"
-  sudo apt-get install -y build-essential curl python3-dev
-fi
+sudo apt-get update
+sudo apt-get install -y build-essential ca-certificates curl gpg python3-dev
 
 echo "==> Installing uv (Astral)…"
 if ! command -v uv >/dev/null 2>&1; then
@@ -76,11 +162,15 @@ uv venv .venv
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
-# Install Prefect + Playwright (keeping your original inclusion of 'uv' shim)
-uv pip install prefect uv playwright
+if [[ "$INSTALL_PLAYWRIGHT" == "yes" ]]; then
+  uv pip install prefect uv playwright
 
-echo "==> Installing Playwright browsers and system deps (may prompt for sudo)…"
-playwright install --with-deps
+  echo "==> Installing Playwright browsers and system deps (may prompt for sudo)…"
+  playwright install --with-deps
+else
+  uv pip install prefect uv
+  echo "==> Skipping Playwright install."
+fi
 
 echo "==> Creating user systemd service for Prefect worker…"
 mkdir -p "$HOME_DIR/.config/systemd/user"
@@ -117,43 +207,41 @@ systemctl --user enable --now prefect-worker
 #############################################
 # ODBC driver cleanup and re-install (18.x)
 #############################################
-echo "==> Removing existing ODBC drivers and tools (if present)…"
-sudo apt-get remove --purge -y msodbcsql17 msodbcsql18 mssql-tools* unixodbc unixodbc-dev odbcinst || true
-sudo apt-get autoremove -y || true
-sudo apt-get clean || true
+if [[ "$INSTALL_ODBC" == "yes" ]]; then
+  echo "==> Removing existing ODBC drivers and tools (if present)…"
+  sudo apt-get remove --purge -y msodbcsql17 msodbcsql18 mssql-tools* unixodbc unixodbc-dev odbcinst || true
+  sudo apt-get autoremove -y || true
+  sudo apt-get clean || true
 
-echo "==> Forcing removal of stuck ODBC packages (if any)…"
-sudo dpkg --remove --force-remove-reinstreq msodbcsql17 msodbcsql18 mssql-tools18 || true
+  echo "==> Forcing removal of stuck ODBC packages (if any)…"
+  sudo dpkg --remove --force-remove-reinstreq msodbcsql17 msodbcsql18 mssql-tools18 || true
 
-echo "==> Cleaning Microsoft repo keys and lists (if present)…"
-sudo rm -f /etc/apt/sources.list.d/mssql-release.list
-sudo rm -f /usr/share/keyrings/microsoft-prod.gpg /etc/apt/trusted.gpg.d/microsoft.asc
+  echo "==> Cleaning Microsoft repo keys and lists (if present)…"
+  sudo rm -f /etc/apt/sources.list.d/mssql-release.list
+  sudo rm -f /usr/share/keyrings/microsoft-prod.gpg /etc/apt/trusted.gpg.d/microsoft.asc
 
-arch="$(dpkg --print-architecture)"
-echo "==> Downloading Microsoft ODBC 18 and tools .deb packages for arch: ${arch}…"
-cd "$PREFECT_DIR"
-# Using the explicit FOCAL path as in your original commands; adjust MS_REPO_CODENAME if needed
-curl -fLO "https://packages.microsoft.com/repos/microsoft-ubuntu-${MS_REPO_CODENAME}-prod/pool/main/m/msodbcsql18/msodbcsql18_${MSODBC_VERSION}_${arch}.deb"
-curl -fLO "https://packages.microsoft.com/repos/microsoft-ubuntu-${MS_REPO_CODENAME}-prod/pool/main/m/mssql-tools18/mssql-tools18_${MSSQLTOOLS_VERSION}_${arch}.deb"
+  echo "==> Installing Microsoft package repository for Ubuntu ${VERSION_ID}…"
+  repo_deb="packages-microsoft-prod.deb"
+  cd "$PREFECT_DIR"
+  curl -fsSLo "$repo_deb" "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
+  sudo dpkg -i "$repo_deb"
+  rm -f "$repo_deb"
 
-echo "==> Installing unixodbc-dev and pre-accepting EULA for msodbcsql18…"
-sudo apt-get update -y
-sudo apt-get install -y unixodbc-dev
-sudo sh -c "echo msodbcsql18 msodbcsql18/accept_eula select true | debconf-set-selections"
+  echo "==> Installing Microsoft ODBC 18, tools, and unixODBC headers…"
+  sudo apt-get update
+  sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev
 
-echo "==> Installing downloaded .deb packages…"
-set +e
-sudo dpkg -i msodbcsql18_*.deb mssql-tools18_*.deb
-dpkg_status=$?
-set -e
-if [[ $dpkg_status -ne 0 ]]; then
-  echo "Fixing missing dependencies…"
-  sudo apt-get -f install -y
+  if ! grep -qs '/opt/mssql-tools18/bin' "$HOME_DIR/.profile" 2>/dev/null; then
+    echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> "$HOME_DIR/.profile"
+  fi
+else
+  echo "==> Skipping Microsoft ODBC install."
 fi
 
 echo "✅ All done!
 - Prefect worker service: systemctl --user status prefect-worker
 - Logs: journalctl --user -u prefect-worker -f
 - Prefect dir: ${PREFECT_DIR}
-- ODBC 18 installed: verify with 'odbcinst -q -d' (optional)
+- Playwright install: ${INSTALL_PLAYWRIGHT}
+- ODBC 18 install: ${INSTALL_ODBC}
 "
