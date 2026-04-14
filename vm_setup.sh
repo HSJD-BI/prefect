@@ -162,13 +162,17 @@ uv venv .venv
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
+PREFECT_VER="3.6.16"
+PENDULUM_VER="3.2.0"
+PYDANTIC_VER="2.12.5"
+
 if [[ "$INSTALL_PLAYWRIGHT" == "yes" ]]; then
-  uv pip install prefect==3.6.17 uv playwright
+  uv pip install prefect==$PREFECT_VER pendulum==$PENDULUM_VER pydantic==$PYDANTIC_VER uv playwright
 
   echo "==> Installing Playwright browsers and system deps (may prompt for sudo)…"
   playwright install --with-deps
 else
-  uv pip install prefect uv
+  uv pip install prefect==$PREFECT_VER pendulum==$PENDULUM_VER pydantic==$PYDANTIC_VER uv
   echo "==> Skipping Playwright install."
 fi
 
