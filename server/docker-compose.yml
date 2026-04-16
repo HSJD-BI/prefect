@@ -65,13 +65,19 @@ services:
     command: prefect server services start
 
   prefect-worker:
-    image: prefecthq/prefect:3-latest
+    build:
+      context: .
+      dockerfile: prefect-worker.Dockerfile
+    image: prefect-worker:latest
     depends_on:
       prefect-server:
         condition: service_healthy
     environment:
       PREFECT_API_URL: http://prefect-server:4200/api
-    command: prefect worker start --pool local-pool
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: prefect worker start --pool local-pool --type docker
     restart: on-failure
 
 volumes:
