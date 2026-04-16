@@ -6,7 +6,7 @@ pull:
       id: clone-step
       repository: https://github.com/HSJD-BI/whatsapp_scrapping.git
       branch: "{{ prefect.variables.deployment_branch }}"
-      credentials: "{{ prefect.blocks.github-credentials.reminders-profile }}"  
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
   - prefect.deployments.steps.run_shell_script:
       script: uv pip install -r requirements.txt
       stream_output: true
