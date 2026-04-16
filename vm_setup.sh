@@ -162,7 +162,7 @@ uv venv .venv
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
-PREFECT_VER="3.6.16"
+PREFECT_VER="3.6.25"
 PENDULUM_VER="3.2.0"
 PYDANTIC_VER="2.12.5"
 
