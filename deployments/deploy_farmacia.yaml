@@ -25,8 +25,9 @@ deployments:
           PASSWORD_TS: "TEST"
     schedules:
       - cron: "0 0 * * *"
+        slug: "daily-midnight-carga-items"
         timezone: "America/Buenos_Aires"
-        active: true
+        active: false
   - name: deploy-scrapping-farmacia
     descripcion: ""
     flow_name: scrapping-carga-precios
@@ -39,6 +40,7 @@ deployments:
           PASSWORD_TS: "TEST"
     schedules:
       - cron: "15 0 * * *"
+        slug: "daily-0015-scrapping"
         timezone: "America/Buenos_Aires"
         active: true
   - name: deploy-notify-email
@@ -61,3 +63,33 @@ deployments:
         env:
           USUARIO_TS: "DEMO"
           PASSWORD_TS: "TEST"
+  - name: deploy-chequeo-precios-ts
+    descripcion: ""
+    flow_name: chequeo-precios-ts
+    entrypoint: flows/flow_chequeo_precios_ts.py:chequeo_precios_ts
+    work_pool:
+      name: "vm-farmacia"
+      job_variables:
+        env:
+          USUARIO_TS: "DEMO"
+          PASSWORD_TS: "TEST"
+    schedules:
+      - cron: "0 0 * * *"
+        slug: "daily-midnight-chequeo-precios-ts"
+        timezone: "America/Buenos_Aires"
+        active: true
+  - name: deploy-carga-pag-medicamentos
+    descripcion: ""
+    flow_name: carga-pag-medicamentos-farm
+    entrypoint: flows/flow_carga_pag_medicamentos.py:carga_pag_medicamentos
+    work_pool:
+      name: "vm-farmacia"
+      job_variables:
+        env:
+          USUARIO_TS: "DEMO"
+          PASSWORD_TS: "TEST"
+    schedules:
+      - cron: "4 0 * * *"
+        slug: "daily-midnight-carga-pag-medicamentos-"
+        timezone: "America/Buenos_Aires"
+        active: true
