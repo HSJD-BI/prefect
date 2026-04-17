@@ -18,7 +18,7 @@ deployments:
     flow_name: bot_reportes_mantenimiento_flow
     entrypoint: flows/flow.py:bot_reportes_mantenimiento_flow
     work_pool:
-      name: "vm_reportes"
+      name: "vm-windows-234"
       job_variables:
         env:
           CLIENT_ID: 5556026d-0ae8-4d60-a343-b5141d63778b
