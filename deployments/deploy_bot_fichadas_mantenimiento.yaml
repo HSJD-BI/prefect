@@ -1,0 +1,31 @@
+name: procesar_reportes_mantenimiento
+prefect-version: 3.6.25
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/bot-fichadas-mantenimiento.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+deployments:
+  - name: deploy-bot-fichadas-mantenimiento
+    descripcion: ""
+    flow_name: procesar_reportes_mantenimiento
+    entrypoint: flows/flow.py:procesar_reportes_mantenimiento
+    work_pool:
+      name: "vm_reportes"
+      job_variables:
+        env:
+          CLIENT_ID: 5556026d-0ae8-4d60-a343-b5141d63778b
+          TENANT_ID: 4212c5a7-7deb-4ed3-8684-0ab5a34d13f3
+          SITE_URL: https://hospitalsanjuandedios.sharepoint.com/sites/Procesos-Analitycs
+    schedules:
+      - cron: "0 5 1-15 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+  
