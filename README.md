@@ -330,13 +330,14 @@ Este enfoque sirve para casos simples, pero para los proyectos productivos convi
 1. Confirmar en que VM o worker debe correr.
 2. Crear el work pool si todavia no existe.
 3. Verificar que el worker este activo y conectado al pool.
-4. Crear el YAML en `deployments/`.
-5. Definir `entrypoint` como `ruta/al_archivo.py:nombre_del_flow`.
-6. Agregar `pull` para clonar el repo y instalar dependencias.
-7. Agregar `job_variables.env` necesarias.
-8. Configurar schedule si corresponde.
-9. Ejecutar `prefect deploy --prefect-file deployments/<archivo>.yaml --all`.
-10. Probar una corrida manual desde la UI o con `prefect deployment run`.
+4. Crear el flow en el proyecto (función con decorador `prefect.flow`).
+5. Crear el YAML en `deployments/`.
+6. Definir `entrypoint` como `ruta/al_archivo.py:nombre_del_flow`.
+7. Agregar `pull` para clonar el repo e instalar dependencias.
+8. Agregar `job_variables.env` necesarias.
+9. Configurar schedule si corresponde.
+10. Ejecutar `prefect deploy --prefect-file deployments/<archivo>.yaml --all` desde la carpeta del proyecto.
+11. Probar una corrida manual desde la UI o con `prefect deployment run`.
 
 ## Troubleshooting
 
