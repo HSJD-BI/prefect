@@ -1,5 +1,5 @@
 name: whatsapp_scrapping
-prefect-version: 3.6.5
+prefect-version: 3.6.25
 
 
 build:
@@ -49,7 +49,6 @@ deployments:
           MAIL_RECIPIENTS: "[\"matias.pereira@sanjuandedios.org.ar\", \"constanza.churio@sanjuandedios.org.ar\", \"gestiondeproyectos@sanjuandedios.org.ar\"]"
           MAIL_COPY_RECIPIENTS: "[\"gonzalo.beloqui@sanjuandedios.org.ar\", \"bihsjd5@sanjuandedios.org.ar\"]"
           TESTING: "false"
-
   
   - name: deploy-asignar-perfiles-recordatorios
     description: "Asignar un perfil de recordatorio a cada paciente al que se le debe mandar un recordatorio en el día."
@@ -57,6 +56,8 @@ deployments:
       - cron: "0 8 * * *"
         timezone: "America/Buenos_Aires"
         active: true
+        parameters:
+          servicios: [329690]
     flow_name: asignar-perfiles-flow
     entrypoint: flows/assign_flow.py:asignar_perfiles_flow
     work_pool:

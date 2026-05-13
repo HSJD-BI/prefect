@@ -1,5 +1,5 @@
 name: whatsapp_scrapping_msg
-prefect-version: 3.6.5
+prefect-version: 3.6.25
 
 pull:
   - prefect.deployments.steps.git_clone:
