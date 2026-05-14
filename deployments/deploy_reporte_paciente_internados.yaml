@@ -1,0 +1,38 @@
+name: procesar_reportes_mantenimiento
+prefect-version: 3.6.25
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/reporte-pacientes-internados.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+deployments:
+  - name: reporte-paciente-internados
+    descripcion: ""
+    flow_name: send_reporte_flow
+    entrypoint: flows/send_reporte_flow.py:send_reporte_flow
+    work_pool:
+      name: "vm_reportes"
+      job_variables:
+        env:
+          DB_SERVER: "10.0.0.235"
+          DB_NAME: "DW"
+          ACTIVITIES_DB: "PASTORAL"
+          EMAIL_RECIPIENTS: "serviciodepastoral@sanjuandedios.org.ar,liliana.dominguez@sanjuandedios.org.ar"
+    schedules:
+      - cron: "30 8 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
+      - cron: "00 13 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
+      - cron: "00 16 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
+  
