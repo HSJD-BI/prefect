@@ -1,0 +1,30 @@
+name: procesar_reporte_stock_laboratorio
+prefect-version: 3.6.25
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/reportes-automaticos.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+deployments:
+  - name: reporte-stock-laboratorio
+    descripcion: ""
+    flow_name: send_stock_lab
+    entrypoint: flows/send_stock_lab_flow.py:send_stock_lab_flow
+    work_pool:
+      name: "vm_reportes"
+      job_variables:
+        env:
+          DB_SERVER: "10.0.0.235"
+          DB_NAME: "DW"
+          
+    schedules:
+      - cron: "0 7 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
