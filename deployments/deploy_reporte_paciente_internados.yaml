@@ -25,6 +25,7 @@ deployments:
           DB_NAME: "DW"
           ACTIVITIES_DB: "PASTORAL"
           EMAIL_RECIPIENTS: "serviciodepastoral@sanjuandedios.org.ar,liliana.dominguez@sanjuandedios.org.ar"
+          ERROR_EMAIL_RECIPIENTS: "grupobi@sanjuandedios.org.ar"
     schedules:
       - cron: "30 8 * * *"
         timezone: "America/Buenos_Aires"
