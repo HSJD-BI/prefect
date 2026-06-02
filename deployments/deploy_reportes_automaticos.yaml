@@ -8,13 +8,16 @@ pull:
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
   - prefect.deployments.steps.run_shell_script:
-      script: uv pip install -r requirements.txt
+      script: uv pip install --reinstall-package pandas --no-cache -r requirements.txt
       stream_output: true
       directory: "{{ clone-step.directory }}"
+  # - prefect.deployments.steps.run_shell_script:
+  #     script: uv pip install -r requirements.txt
+  #     stream_output: true
 
 deployments:
   - name: deploy-stock-laboratorio
-    descripcion: ""
+    description: ""
     flow_name: send_stock_lab_flow
     entrypoint: flows/send_stock_lab.py:send_stock_lab_flow
     work_pool:
