@@ -7,8 +7,17 @@ pull:
       repository: https://github.com/HSJD-BI/reportes-automaticos.git
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
+  # - prefect.deployments.steps.run_shell_script:
+  #     script: uv pip install --reinstall-package pandas --no-cache -r requirements.txt
+  #     stream_output: true
+  #     directory: "{{ clone-step.directory }}"
   - prefect.deployments.steps.run_shell_script:
-      script: uv pip install --reinstall-package pandas --no-cache -r requirements.txt
+      script: >
+        uv pip install
+        --python /home/ububi/prefect/.venv/bin/python
+        --reinstall-package pandas
+        --refresh-package pandas
+        -r requirements.txt
       stream_output: true
       directory: "{{ clone-step.directory }}"
 
@@ -20,6 +29,6 @@ deployments:
     work_pool:
       name: "vm_reportes"
     schedules:
-      - cron: "38 9 * * *"
+      - cron: "51 9 * * *"
         timezone: "America/Buenos_Aires"
         active: true
