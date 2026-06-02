@@ -8,10 +8,9 @@ pull:
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
   - prefect.deployments.steps.run_shell_script:
-      script: uv pip install -r requirements.txt
+      script: uv pip install --reinstall-package pandas --no-cache -r requirements.txt
       stream_output: true
       directory: "{{ clone-step.directory }}"
-  #     script: uv pip install -r requirements.txt
 
 deployments:
   - name: deploy-stock-laboratorio
@@ -21,6 +20,6 @@ deployments:
     work_pool:
       name: "vm_reportes"
     schedules:
-      - cron: "30 9 * * *"
+      - cron: "38 9 * * *"
         timezone: "America/Buenos_Aires"
         active: true
