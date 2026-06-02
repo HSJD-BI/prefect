@@ -6,11 +6,7 @@ pull:
       id: clone-step
       repository: https://github.com/HSJD-BI/reportes-automaticos.git
       branch: "{{ prefect.variables.deployment_branch }}"
-      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"  
-  # - prefect.deployments.steps.run_shell_script:
-  #     script: uv pip install --reinstall-package pandas --no-cache -r requirements.txt
-  #     stream_output: true
-  #     directory: "{{ clone-step.directory }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
   - prefect.deployments.steps.run_shell_script:
       script: >
         uv pip install
@@ -29,6 +25,6 @@ deployments:
     work_pool:
       name: "vm_reportes"
     schedules:
-      - cron: "51 9 * * *"
+      - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
         active: true
