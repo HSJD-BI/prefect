@@ -28,3 +28,293 @@ deployments:
       - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
         active: true
+
+  - name: deploy-agenda-sin-turno
+    description: ""
+    flow_name: send_agenda_sin_turno_flow
+    entrypoint: flows/send_agenda_sin_turno.py:send_agenda_sin_turno_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "5 11 * * 1-6"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-alerta-carga-dw
+    description: ""
+    flow_name: send_alerta_carga_dw_flow
+    entrypoint: flows/send_alerta_carga_dw.py:send_alerta_carga_dw_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "35 9 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-ate-no-fin-ama
+    description: ""
+    flow_name: send_ate_no_fin_ama_flow
+    entrypoint: flows/send_ate_no_fin_ama.py:send_ate_no_fin_ama_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "5 10 * * 1"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-ate-no-fin-amu
+    description: ""
+    flow_name: send_ate_no_fin_amu_flow
+    entrypoint: flows/send_ate_no_fin_amu.py:send_ate_no_fin_amu_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "7 10 * * 1"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-auditoria-personas
+    description: ""
+    flow_name: send_auditoria_personas_flow
+    entrypoint: flows/send_auditoria_personas.py:send_auditoria_personas_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "10 11 * * 6"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-bono-guardia
+    description: ""
+    flow_name: send_bono_guardia_flow
+    entrypoint: flows/send_bono_guardia.py:send_bono_guardia_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "15 11 5 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-cirugia-origen-castelar
+    description: ""
+    flow_name: send_cirugia_origen_castelar_flow
+    entrypoint: flows/send_cirugia_orig_castelar.py:send_cirugia_orig_castelar_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "10 13 1 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-derivaciones-piso
+    description: ""
+    flow_name: send_derivaciones_piso_flow
+    entrypoint: flows/send_derivaciones_piso.py:send_derivaciones_piso_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "3 11 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-errores-matricula
+    description: ""
+    flow_name: send_errores_matricula_flow
+    entrypoint: flows/send_errores_matricula.py:send_errores_matricula_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "17 13 1 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-est-inf-vencido
+    description: ""
+    flow_name: send_est_inf_vencido_flow
+    entrypoint: flows/send_est_inf_vencido.py:send_est_inf_vencido_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "14 11 * * 1"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-interconsultas
+    description: ""
+    flow_name: send_interconsultas_flow
+    entrypoint: flows/send_interconsultas.py:send_interconsultas_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "9 11 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-med-sin-firma
+    description: ""
+    flow_name: send_med_sin_firma_flow
+    entrypoint: flows/send_med_sin_firma.py:send_med_sin_firma_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "36 12 * * 1"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-mkt-pacientes
+    description: ""
+    flow_name: send_mkt_pacientes_flow
+    entrypoint: flows/send_mkt_pacientes.py:send_mkt_pacientes_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "16 12 * * 1-6"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-mkt-pacientes2
+    description: ""
+    flow_name: send_mkt_pacientes2_flow
+    entrypoint: flows/send_mkt_pacientes2.py:send_mkt_pacientes2_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "18 12 * * 1-6"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-pacientes-mensual-mkt
+    description: ""
+    flow_name: send_pacientes_mensual_mkt_flow
+    entrypoint: flows/send_pacientes_mensual_mkt.py:send_pacientes_mensual_mkt_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "21 11 1 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-pacientes-obs-uco
+    description: ""
+    flow_name: send_pac_obs_uco_flow
+    entrypoint: flows/send_pacientes_observacion_uco.py:send_pacientes_observacion_uco_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "11 11 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-pap-laboratorio
+    description: ""
+    flow_name: send_pap_laboratorio_flow
+    entrypoint: flows/send_pap_laboratorio.py:send_pap_laboratorio_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "16 10 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-prescripciones-amb
+    description: ""
+    flow_name: send_prescripciones_amb_flow
+    entrypoint: flows/send_prescripciones_amb.py:send_prescripciones_amb_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "3 9 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-refacturas
+    description: ""
+    flow_name: send_refacturas_flow
+    entrypoint: flows/send_refacturas.py:send_refacturas_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "33 11 7 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-seguridad-pacientes
+    description: ""
+    flow_name: send_seguridad_pac_flow
+    entrypoint: flows/send_seguridad_pacientes.py:send_seguridad_pacientes_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "57 10 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-sobreturnos
+    description: ""
+    flow_name: send_sobreturnos_flow
+    entrypoint: flows/send_sobreturnos.py:send_sobreturnos_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "0 0 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-turnos-pacientes-provisorios
+    description: ""
+    flow_name: send_turnos_pac_prov_flow
+    entrypoint: flows/send_turnos_pacientes_provisorios.py:send_turnos_pacientes_provisorios_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "56 10 * * 5"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-turnos-portal
+    description: ""
+    flow_name: send_turnos_portal_flow
+    entrypoint: flows/send_turnos_portal.py:send_turnos_portal_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "58 9 * * 1"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-turnos-resonancia-eco
+    description: ""
+    flow_name: send_turnos_res_eco_flow
+    entrypoint: flows/send_turnos_res_eco.py:send_turnos_res_eco_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "56 9 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+  - name: deploy-valorizacion-inventarios
+    description: ""
+    flow_name: send_valorizacion_inventarios_flow
+    entrypoint: flows/send_valorizacion_inventarios.py:send_valorizacion_inventarios_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "10 13 1 * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+
+# ===============
+# Cargados a mano
+# ===============
+
+  - name: deploy-honorarios-devengados
+    description: ""
+    flow_name: send_hono_deven_flow
+    entrypoint: flows/send_hono_deven.py:send_hono_deven_flow
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "49 12 * * 1-5"
+        timezone: "America/Buenos_Aires"
+        active: false
