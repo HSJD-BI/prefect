@@ -8,14 +8,7 @@ pull:
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
   - prefect.deployments.steps.run_shell_script:
-      script: >
-        uv pip install
-        --python /home/ububi/prefect/.venv/bin/python
-        --reinstall-package pandas
-        --refresh-package pandas
-        -r requirements.txt
-        pandas==2.2.3
-        openpyxl==3.1.5
+      script: uv pip install -r requirements.txt
       stream_output: true
       directory: "{{ clone-step.directory }}"
 
