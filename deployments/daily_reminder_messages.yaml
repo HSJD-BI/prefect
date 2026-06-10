@@ -17,6 +17,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: open-persistent-browser
     entrypoint: flows/open_browser_flow.py:open_browser_flow
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI2"
       job_variables:
@@ -28,6 +29,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: open-persistent-browser
     entrypoint: flows/open_browser_flow.py:open_browser_flow
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI1"
       job_variables:
@@ -39,6 +41,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: open-persistent-browser
     entrypoint: flows/open_browser_flow.py:open_browser_flow
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI6"
       job_variables:
@@ -50,6 +53,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: enviar-mensaje-recordatorios
     entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI2"
       job_variables:
@@ -64,6 +68,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: enviar-mensaje-recordatorios
     entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI1"
       job_variables:
@@ -78,6 +83,7 @@ deployments:
     description: "Abrir navegador para iniciar sesión en Whatsapp."
     flow_name: enviar-mensaje-recordatorios
     entrypoint: flows/send_messages_flow.py:send_messages_reminders
+    tags: ["Whatsapp", "Scraper"]
     work_pool:
       name: "vm-BI6"
       job_variables:

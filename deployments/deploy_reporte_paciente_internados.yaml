@@ -17,6 +17,7 @@ deployments:
     descripcion: ""
     flow_name: send_reporte_flow
     entrypoint: flows/send_reporte_flow.py:send_reporte_flow
+    tags: ["Scraper", "Reporte"]
     work_pool:
       name: "vm_reportes"
       job_variables:

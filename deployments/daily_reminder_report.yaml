@@ -39,6 +39,7 @@ deployments:
         active: true
     flow_name: reportes-diarios-flow
     entrypoint: flows/report_flow.py:reportes_diarios_flow
+    tags: ["Whatsapp", "Reporte"]
     work_pool:
       name: "local-pool"
       job_variables:
@@ -60,6 +61,7 @@ deployments:
           servicios: [329690]
     flow_name: asignar-perfiles-flow
     entrypoint: flows/assign_flow.py:asignar_perfiles_flow
+    tags: ["Whatsapp"]
     work_pool:
       name: "local-pool"
       job_variables: 
