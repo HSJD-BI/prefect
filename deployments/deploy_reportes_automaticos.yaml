@@ -340,3 +340,27 @@ deployments:
       - cron: "49 12 * * 1-5"
         timezone: "America/Buenos_Aires"
         active: false
+
+  - name: turnos_reso_vaginal_diario
+    description: ""
+    flow_name: send_turnos_reso_vaginal_flow
+    entrypoint: flows/send_turnos_reso_vaginal.py:send_turnos_reso_vaginal_flow
+    tags: ["reportes-automaticos"]
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "15 7 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
+  
+  - name: prescripciones_pre_endoscopia_diario
+    description: ""
+    flow_name: send_prescripciones_pre_endoscopia_flow
+    entrypoint: flows/send_prescripciones_pre_endoscopia.py:send_prescripciones_pre_endoscopia_flow
+    tags: ["reportes-automaticos"]
+    work_pool:
+      name: "vm_reportes"
+    schedules:
+      - cron: "0 7 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
