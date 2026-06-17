@@ -289,7 +289,7 @@ deployments:
     schedules:
       - cron: "56 10 * * 5"
         timezone: "America/Buenos_Aires"
-        active: false
+        active: true
 
   - name: deploy-turnos-portal
     description: ""
@@ -353,7 +353,7 @@ deployments:
     schedules:
       - cron: "15 7 * * *"
         timezone: "America/Buenos_Aires"
-        active: false
+        active: true
   
   - name: prescripciones_pre_endoscopia_diario
     description: ""
@@ -365,4 +365,4 @@ deployments:
     schedules:
       - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
-        active: false
+        active: true
