@@ -1,18 +1,27 @@
 name: reportes-automaticos
 prefect-version: 3.6.25
 
+build:
+  - prefect_docker.deployments.steps.build_docker_image:
+      id: build-image
+      requires: prefect-docker>=0.3.0
+      image_name: docker.io/bihsjd/reportes-automaticos
+      tag: latest
+      dockerfile: dockerfile
+
+push:
+  - prefect_docker.deployments.steps.push_docker_image:
+      id: push-image
+      requires: prefect-docker
+      image_name: "{{ build-image.image_name }}"
+      tag: "{{ build-image.tag }}"
+
 pull:
   - prefect.deployments.steps.git_clone:
       id: clone-step
       repository: https://github.com/HSJD-BI/reportes-automaticos.git
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
-  - prefect.deployments.steps.run_shell_script:
-      script: |
-        uv pip install -r requirements.txt
-        uv pip install pandas==2.2.3
-      stream_output: true
-      directory: "{{ clone-step.directory }}"
 
 deployments:
   - name: deploy-stock-laboratorio
@@ -21,7 +30,11 @@ deployments:
     entrypoint: flows/send_stock_lab.py:send_stock_lab_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
@@ -33,7 +46,11 @@ deployments:
     entrypoint: flows/send_agenda_sin_turno.py:send_agenda_sin_turno_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "5 11 * * 1-6"
         timezone: "America/Buenos_Aires"
@@ -45,7 +62,11 @@ deployments:
     entrypoint: flows/send_alerta_carga_dw.py:send_alerta_carga_dw_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "35 9 * * *"
         timezone: "America/Buenos_Aires"
@@ -57,7 +78,11 @@ deployments:
     entrypoint: flows/send_ate_no_fin_ama.py:send_ate_no_fin_ama_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "5 10 * * 1"
         timezone: "America/Buenos_Aires"
@@ -69,7 +94,11 @@ deployments:
     entrypoint: flows/send_ate_no_fin_amu.py:send_ate_no_fin_amu_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "7 10 * * 1"
         timezone: "America/Buenos_Aires"
@@ -81,7 +110,11 @@ deployments:
     entrypoint: flows/send_auditoria_personas.py:send_auditoria_personas_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "10 11 * * 6"
         timezone: "America/Buenos_Aires"
@@ -93,7 +126,11 @@ deployments:
     entrypoint: flows/send_bono_guardia.py:send_bono_guardia_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "15 11 5 * *"
         timezone: "America/Buenos_Aires"
@@ -105,7 +142,11 @@ deployments:
     entrypoint: flows/send_cirugia_orig_castelar.py:send_cirugia_orig_castelar_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "10 13 1 * *"
         timezone: "America/Buenos_Aires"
@@ -117,7 +158,11 @@ deployments:
     entrypoint: flows/send_derivaciones_piso.py:send_derivaciones_piso_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "3 11 * * *"
         timezone: "America/Buenos_Aires"
@@ -129,7 +174,11 @@ deployments:
     entrypoint: flows/send_errores_matricula.py:send_errores_matricula_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "17 13 1 * *"
         timezone: "America/Buenos_Aires"
@@ -141,7 +190,11 @@ deployments:
     entrypoint: flows/send_est_inf_vencido.py:send_est_inf_vencido_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "14 11 * * 1"
         timezone: "America/Buenos_Aires"
@@ -153,7 +206,11 @@ deployments:
     entrypoint: flows/send_interconsultas.py:send_interconsultas_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "9 11 * * *"
         timezone: "America/Buenos_Aires"
@@ -165,7 +222,11 @@ deployments:
     entrypoint: flows/send_med_sin_firma.py:send_med_sin_firma_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "36 12 * * 1"
         timezone: "America/Buenos_Aires"
@@ -177,7 +238,11 @@ deployments:
     entrypoint: flows/send_mkt_pacientes.py:send_mkt_pacientes_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "16 12 * * 1-6"
         timezone: "America/Buenos_Aires"
@@ -189,7 +254,11 @@ deployments:
     entrypoint: flows/send_mkt_pacientes2.py:send_mkt_pacientes2_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "18 12 * * 1-6"
         timezone: "America/Buenos_Aires"
@@ -201,7 +270,11 @@ deployments:
     entrypoint: flows/send_pacientes_mensual_mkt.py:send_pacientes_mensual_mkt_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "21 11 1 * *"
         timezone: "America/Buenos_Aires"
@@ -213,7 +286,11 @@ deployments:
     entrypoint: flows/send_pacientes_observacion_uco.py:send_pacientes_observacion_uco_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "11 11 * * *"
         timezone: "America/Buenos_Aires"
@@ -225,7 +302,11 @@ deployments:
     entrypoint: flows/send_pap_laboratorio.py:send_pap_laboratorio_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "16 10 * * *"
         timezone: "America/Buenos_Aires"
@@ -237,7 +318,11 @@ deployments:
     entrypoint: flows/send_prescripciones_amb.py:send_prescripciones_amb_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "3 9 * * *"
         timezone: "America/Buenos_Aires"
@@ -249,7 +334,11 @@ deployments:
     entrypoint: flows/send_refacturas.py:send_refacturas_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "33 11 7 * *"
         timezone: "America/Buenos_Aires"
@@ -261,7 +350,11 @@ deployments:
     entrypoint: flows/send_seguridad_pacientes.py:send_seguridad_pacientes_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "57 10 * * *"
         timezone: "America/Buenos_Aires"
@@ -273,7 +366,11 @@ deployments:
     entrypoint: flows/send_sobreturnos.py:send_sobreturnos_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "0 0 * * *"
         timezone: "America/Buenos_Aires"
@@ -285,7 +382,11 @@ deployments:
     entrypoint: flows/send_turnos_pacientes_provisorios.py:send_turnos_pacientes_provisorios_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "56 10 * * 5"
         timezone: "America/Buenos_Aires"
@@ -297,7 +398,11 @@ deployments:
     entrypoint: flows/send_turnos_portal.py:send_turnos_portal_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "58 9 * * 1"
         timezone: "America/Buenos_Aires"
@@ -309,7 +414,11 @@ deployments:
     entrypoint: flows/send_turnos_res_eco.py:send_turnos_res_eco_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "56 9 * * *"
         timezone: "America/Buenos_Aires"
@@ -321,7 +430,11 @@ deployments:
     entrypoint: flows/send_valorizacion_inventarios.py:send_valorizacion_inventarios_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "10 13 1 * *"
         timezone: "America/Buenos_Aires"
@@ -337,7 +450,11 @@ deployments:
     entrypoint: flows/send_hono_deven.py:send_hono_deven_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "49 12 * * 1-5"
         timezone: "America/Buenos_Aires"
@@ -349,7 +466,11 @@ deployments:
     entrypoint: flows/send_turnos_reso_vaginal.py:send_turnos_reso_vaginal_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "15 7 * * *"
         timezone: "America/Buenos_Aires"
@@ -361,7 +482,11 @@ deployments:
     entrypoint: flows/send_prescripciones_pre_endoscopia.py:send_prescripciones_pre_endoscopia_flow
     tags: ["reportes-automaticos"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
     schedules:
       - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
