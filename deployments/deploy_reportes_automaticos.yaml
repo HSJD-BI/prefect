@@ -491,3 +491,23 @@ deployments:
       - cron: "0 7 * * *"
         timezone: "America/Buenos_Aires"
         active: true
+
+
+
+
+
+  - name: egresos_int
+    description: ""
+    flow_name: send_egresos_int_flow
+    entrypoint: flows/send_egresos_int.py:send_egresos_int_flow
+    tags: ["reportes-automaticos"]
+    work_pool:
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: docker.io/bihsjd/reportes-automaticos:latest
+        image_pull_policy: "IfNotPresent"
+    schedules:
+      - cron: "0 7 * * *"
+        timezone: "America/Buenos_Aires"
+        active: true
