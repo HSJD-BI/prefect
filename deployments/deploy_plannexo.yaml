@@ -1,0 +1,26 @@
+name: carga-diaria-plannexo
+prefect-version: 3.6.11
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/bionexo-connection.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
+  - prefect.deployments.steps.run_shell_script:
+      script: uv pip install -r requirements.txt
+      stream_output: true
+      directory: "{{ clone-step.directory }}"
+
+deployments:
+  - name: deploy-plannexo
+    descripcion: ""
+    flow_name: daily_plannexo_reload
+    entrypoint: flows/flow.py:daily_plannexo_flow
+    tags: ["plannexo"]
+    work_pool:
+      name: "vm-windows-234"
+    schedules:
+      - cron: "30 0 * * *"
+        timezone: "America/Buenos_Aires"
+        active: false
