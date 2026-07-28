@@ -21,6 +21,6 @@ deployments:
     work_pool:
       name: "vm_reportes"
     schedules:
-      - cron: "0 0 * * *"
+      - cron: "5 0 * * *"
         timezone: "America/Buenos_Aires"
         active: true
