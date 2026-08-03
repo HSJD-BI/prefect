@@ -1,16 +1,27 @@
 name: procesar_reportes_mantenimiento
 prefect-version: 3.6.25
 
+build:
+  - prefect_docker.deployments.steps.build_docker_image:
+      id: build-image
+      requires: prefect-docker>=0.3.0
+      image_name: docker.io/bihsjd/reporte-pacientes-internados
+      tag: latest
+      dockerfile: Dockerfile
+
+push:
+  - prefect_docker.deployments.steps.push_docker_image:
+      id: push-image
+      requires: prefect-docker>=0.3.0
+      image_name: "{{ build-image.image_name }}"
+      tag: "{{ build-image.tag }}"
+
 pull:
   - prefect.deployments.steps.git_clone:
       id: clone-step
       repository: https://github.com/HSJD-BI/reporte-pacientes-internados.git
       branch: "{{ prefect.variables.deployment_branch }}"
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
-  - prefect.deployments.steps.run_shell_script:
-      script: uv pip install -r requirements.txt
-      stream_output: true
-      directory: "{{ clone-step.directory }}"
 
 deployments:
   - name: reporte-paciente-internados
@@ -19,8 +30,10 @@ deployments:
     entrypoint: flows/send_reporte_flow.py:send_reporte_flow
     tags: ["Scraper", "Reporte"]
     work_pool:
-      name: "vm_reportes"
+      name: "vm_reportes_docker"
       job_variables:
+        image: "{{ build-image.image }}"
+        image_pull_policy: "IfNotPresent"
         env:
           DB_SERVER: "10.0.0.235"
           DB_NAME: "DW"
@@ -37,4 +50,3 @@ deployments:
       - cron: "00 16 * * *"
         timezone: "America/Buenos_Aires"
         active: true
-  
