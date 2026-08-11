@@ -32,13 +32,11 @@ deployments:
     work_pool:
       name: "vm_reportes_docker"
       job_variables:
-        image: "{{ build-image.image }}"
-        image_pull_policy: "IfNotPresent"
         env:
           DB_SERVER: "10.0.0.235"
           DB_NAME: "DW"
           ACTIVITIES_DB: "PASTORAL"
-          EMAIL_RECIPIENTS: "serviciodepastoral@sanjuandedios.org.ar,liliana.dominguez@sanjuandedios.org.ar"
+          EMAIL_RECIPIENTS: "serviciodepastoral@sanjuandedios.org.ar,liliana.dominguez@sanjuandedios.org.ar,agustin.alegre@sanjuandedios.org.ar"
           ERROR_EMAIL_RECIPIENTS: "grupobi@sanjuandedios.org.ar"
     schedules:
       - cron: "30 8 * * *"
