@@ -1,0 +1,48 @@
+name: bot-encuesta
+prefect-version: 3.6.26
+
+build:
+  - prefect_docker.deployments.steps.build_docker_image:
+      id: build-image
+      requires: prefect-docker>=0.3.0
+      image_name: docker.io/bihsjd/bot-encuesta
+      tag: latest
+      dockerfile: Dockerfile
+
+push:
+  - prefect_docker.deployments.steps.push_docker_image:
+      id: push-image
+      requires: prefect-docker>=0.3.0
+      image_name: "{{ build-image.image_name }}"
+      tag: "{{ build-image.tag }}"
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      id: clone-step
+      repository: https://github.com/HSJD-BI/botEncuesta.git
+      branch: "{{ prefect.variables.deployment_branch }}"
+      credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
+
+deployments:
+  - name: bot-encuesta-scheduler
+    description: "Audita candidatos de envio y manda un unico PDF sin contactar pacientes."
+    flow_name: bot-encuesta-auditoria
+    entrypoint: test.py:auditar_encuestas_test_flow
+    tags: ["bot-encuesta", "encuestas"]
+    parameters:
+      env: PRD
+      destinatario: "bihsjd3@sanjuandedios.org.ar"
+    work_pool:
+      name: "vm_reportes_docker"
+      work_queue_name: "vm_reportes_docker"
+      job_variables:
+        image: "{{ build-image.image }}"
+        image_pull_policy: "Always"
+        env:
+          BOT_ENCUESTA_ENV: "PRD"
+          DATABASE_DRIVER: "ODBC Driver 17 for SQL Server"
+    schedules:
+      - cron: "0 9,15 * * *"
+        slug: "dos-veces-por-dia"
+        timezone: "America/Buenos_Aires"
+        active: true
