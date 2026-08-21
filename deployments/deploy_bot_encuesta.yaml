@@ -37,7 +37,7 @@ deployments:
       work_queue_name: "vm_reportes_docker"
       job_variables:
         image: "{{ build-image.image }}"
-        image_pull_policy: "Always"
+        image_pull_policy: "IfNotPresent"
         env:
           BOT_ENCUESTA_ENV: "PRD"
           DATABASE_DRIVER: "ODBC Driver 17 for SQL Server"
