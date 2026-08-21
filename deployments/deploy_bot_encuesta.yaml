@@ -20,7 +20,7 @@ pull:
   - prefect.deployments.steps.git_clone:
       id: clone-step
       repository: https://github.com/HSJD-BI/botEncuesta.git
-      branch: "{{ prefect.variables.deployment_branch }}"
+      branch: dev
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
 
 deployments:
