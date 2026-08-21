@@ -20,18 +20,17 @@ pull:
   - prefect.deployments.steps.git_clone:
       id: clone-step
       repository: https://github.com/HSJD-BI/botEncuesta.git
-      branch: dev
+      branch: main
       credentials: "{{ prefect.blocks.github-credentials.bi-github }}"
 
 deployments:
   - name: bot-encuesta-scheduler
-    description: "Audita candidatos de envio y manda un unico PDF sin contactar pacientes."
-    flow_name: bot-encuesta-auditoria
-    entrypoint: test.py:auditar_encuestas_test_flow
+    description: "Envia encuestas de satisfaccion a pacientes."
+    flow_name: bot-encuesta
+    entrypoint: bot_encuesta/flows.py:enviar_encuestas_flow
     tags: ["bot-encuesta", "encuestas"]
     parameters:
       env: PRD
-      destinatario: "bihsjd3@sanjuandedios.org.ar"
     work_pool:
       name: "vm_reportes_docker"
       work_queue_name: "vm_reportes_docker"
